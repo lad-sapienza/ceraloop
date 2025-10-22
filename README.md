@@ -198,6 +198,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 For issues or questions, please open an issue on GitHub.
 
+**Live Demo**: https://lad-sapienza.github.io/ceraloop/
+
 ---
 
 **Note**: This application requires a properly configured Directus backend. Ensure your Directus instance has the correct collections, fields, and permissions set up before deploying.
