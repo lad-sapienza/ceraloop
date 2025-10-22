@@ -26,6 +26,8 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          VITE_DIRECTUS_URL: "https://db.lad-sapienza.it/ceraloop/"
         run: npm run build
 
       - name: Upload artifact
