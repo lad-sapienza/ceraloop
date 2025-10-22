@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  min-height: 100%;
+}
+
+body {
+  @apply bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 bg-fixed;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+.card {
+  @apply bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl shadow-xl p-8 dark:shadow-slate-900/50;
+}
+
+.btn-primary {
+  @apply bg-indigo-600 dark:bg-indigo-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-500 dark:hover:bg-indigo-400 transition;
+}
+
+.input {
+  @apply border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-500;
+}
