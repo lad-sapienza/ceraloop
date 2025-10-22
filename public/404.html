@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>CeraLoop</title>
+  <script>
+    // Store the path and redirect to index.html
+    sessionStorage.setItem('redirectPath', window.location.pathname + window.location.search + window.location.hash);
+    window.location.replace('/');
+  </script>
+</head>
+<body>
+  <div>Redirecting...</div>
+</body>
+</html>
