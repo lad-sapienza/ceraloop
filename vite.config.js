@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig(({ command }) => ({
+export default defineConfig({
   plugins: [react()],
-  base: command === 'build' ? '/ceraloop/' : '/', // Use /ceraloop/ only for production build
+  base: '/', // Use root path for custom domain
   server: {
     proxy: {
       '/api-proxy': {
@@ -24,4 +24,4 @@ export default defineConfig(({ command }) => ({
       }
     }
   }
-}))
+})
