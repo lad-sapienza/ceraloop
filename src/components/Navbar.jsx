@@ -122,6 +122,16 @@ export default function Navbar() {
               >
                 Report
               </Link>
+              <Link 
+                to="/help"
+                className={`font-medium transition ${
+                  isActive('/help') 
+                    ? 'text-indigo-600 dark:text-indigo-400' 
+                    : 'text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400'
+                }`}
+              >
+                Help
+              </Link>
             </div>
           </div>
 

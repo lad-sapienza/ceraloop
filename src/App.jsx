@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Report from './pages/Report'
+import Help from './pages/Help'
 
 function RequireAuth({ children }) {
   const token = localStorage.getItem('directus_token')
@@ -27,6 +28,14 @@ export default function App() {
         element={
           <RequireAuth>
             <Report />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/help"
+        element={
+          <RequireAuth>
+            <Help />
           </RequireAuth>
         }
       />

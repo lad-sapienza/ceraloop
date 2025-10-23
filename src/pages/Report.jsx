@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import api from '../services/api'
+import Footer from '../components/Footer'
 
 // Simple Pie Chart Component
 function PieChart({ evaluated, remaining, total }) {
@@ -354,6 +355,7 @@ export default function Report() {
           </div>
         </main>
       </div>
+      <Footer />
     </>
   )
 }

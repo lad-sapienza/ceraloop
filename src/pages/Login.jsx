@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { login as directusLogin } from '../services/auth'
 import { useTheme } from '../context/ThemeContext'
+import Footer from '../components/Footer'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -27,7 +28,8 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-1 flex items-center justify-center p-6">
       <button
         onClick={toggleTheme}
         className="fixed top-4 right-4 p-3 rounded-lg bg-white/80 dark:bg-slate-800/80 backdrop-blur-md shadow-lg hover:shadow-xl transition"
@@ -95,6 +97,8 @@ export default function Login() {
           </a>
         </p>
       </div>
+      </div>
+      <Footer fixed />
     </div>
   )
 }

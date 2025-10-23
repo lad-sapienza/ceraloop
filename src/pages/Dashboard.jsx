@@ -3,6 +3,7 @@ import api from '../services/api'
 import Navbar from '../components/Navbar'
 import AuthImage from '../components/AuthImage'
 import ImagePanel from '../components/ImagePanel'
+import Footer from '../components/Footer'
 
 export default function Dashboard() {
   const [profile, setProfile] = useState(null)
@@ -519,7 +520,7 @@ export default function Dashboard() {
                           Saved!
                         </>
                       ) : (
-                        'Save to Database'
+                        'Save to database'
                       )}
                     </button>
 
@@ -721,6 +722,7 @@ export default function Dashboard() {
         )}
         </main>
       </div>
+      <Footer />
     </>
   )
 }
