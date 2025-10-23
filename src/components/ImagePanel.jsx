@@ -29,7 +29,7 @@ export default function ImagePanel({
       <div className={`relative ${isGrayed ? 'opacity-30 grayscale' : ''} transition-all duration-300`}>
         <AuthImage 
           filename={match.filename}
-          alt={`${match.key}: ${match.basename}`}
+          alt={`${match.key}`}
           className="w-64 h-auto rounded-lg"
         />
       </div>

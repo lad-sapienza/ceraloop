@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar'
 import AuthImage from '../components/AuthImage'
 import ImagePanel from '../components/ImagePanel'
 import Footer from '../components/Footer'
+import { toast } from '../components/Toaster'
 
 export default function Dashboard() {
   const [profile, setProfile] = useState(null)
@@ -286,7 +287,8 @@ export default function Dashboard() {
     setGrayedImages(newGrayedImages)
   }
 
-  const loadNextModelOutput = async () => {
+  const loadNextModelOutput = async (opts = {}) => {
+    const { excludeItem = null, retries = 2, delayMs = 350 } = opts
     try {
       setModelLoading(true)
       setModelError(null)
@@ -312,12 +314,16 @@ export default function Dashboard() {
         .map(feedback => feedback.item)
         .filter(Boolean)
 
+      // Also exclude the current item just saved (in case of eventual consistency)
+      const excludeList = [...feedbackItems]
+      if (excludeItem && !excludeList.includes(excludeItem)) excludeList.push(excludeItem)
+
       // Get the first model_output item that is NOT in the feedback list
       let modelOutputRes
-      if (feedbackItems.length > 0) {
+      if (excludeList.length > 0) {
         modelOutputRes = await api.get('/items/model_output', {
           params: {
-            'filter[item][_nin]': feedbackItems.join(','),
+            'filter[item][_nin]': excludeList.join(','),
             'limit': 1,
             'sort': 'id'
           }
@@ -331,8 +337,21 @@ export default function Dashboard() {
         })
       }
 
-      const record = (modelOutputRes.data.data || modelOutputRes.data)?.[0] || null
-      
+      let record = (modelOutputRes.data.data || modelOutputRes.data)?.[0] || null
+
+      // Retry a couple of times if not found or if the excluded item sneaks back
+      let attempts = retries
+      while (attempts > 0 && (!record || (excludeItem && record?.item === excludeItem))) {
+        await new Promise(res => setTimeout(res, delayMs))
+        const retryRes = await api.get('/items/model_output', {
+          params: excludeList.length > 0
+            ? { 'filter[item][_nin]': excludeList.join(','), 'limit': 1, 'sort': 'id' }
+            : { 'limit': 1, 'sort': 'id' }
+        })
+        record = (retryRes.data.data || retryRes.data)?.[0] || null
+        attempts--
+      }
+
       if (!record) {
         setModelError('All items have been reviewed. Thank you for your feedback!')
         setModelOutput(null)
@@ -380,21 +399,25 @@ export default function Dashboard() {
       // Make the API call
       const response = await api.post('/items/user_feedbacks', payload)
 
-      console.log('Feedback saved successfully:', response.data)
+  console.log('Feedback saved successfully:', response.data)
 
   // Success handling
   setSaveSuccess(true)
+  toast.success('Feedback saved successfully!')
   // Refresh recent records list
   fetchRecentRecords()
 
-  // After a short delay, reload the page so the app fetches the newly-created record set
-  // and the server can return the next unreviewed item.
-  setTimeout(() => {
-    // reset visual success state first for a cleaner UX if needed
-    setSaveSuccess(false)
-    // Full page reload to pick up the new record from the backend
-    window.location.reload()
-  }, 1200)
+      // Reset local UI state quickly and fetch the next item without a full reload.
+      const justReviewedItem = String(modelOutput.item)
+      setTimeout(() => {
+        setSaveSuccess(false)
+      }, 1200)
+      // Clear selection and UI affordances
+      setSavedSelection(null)
+      setGrayedImages(new Set())
+      setMatchImages([])
+      // Load the next record, also explicitly excluding the one we just saved
+      loadNextModelOutput({ excludeItem: justReviewedItem })
 
     } catch (err) {
       console.error('Failed to save feedback:', err)
@@ -404,7 +427,8 @@ export default function Dashboard() {
                     || err.response?.data?.message
                     || err.message 
                     || 'Failed to save feedback'
-      setSaveError(errorMsg)
+  setSaveError(errorMsg)
+  toast.error(errorMsg)
       
     } finally {
       setIsSaving(false)
@@ -539,17 +563,7 @@ export default function Dashboard() {
                       </div>
                     )}
 
-                    {/* Save Success Message */}
-                    {saveSuccess && (
-                      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
-                        <div className="flex items-start gap-2">
-                          <svg className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <div className="text-sm text-green-700 dark:text-green-400">Feedback saved successfully!</div>
-                        </div>
-                      </div>
-                    )}
+                    {/* Success toast replaces inline success message */}
 
                     {/* Recent Records List */}
                     <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
