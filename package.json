@@ -2,7 +2,7 @@
   "name": "CeraLoop",
   "version": "1.0.0",
   "private": false,
-  "description": "CeraLoop: A web application for providing human feedback on AI-generated clustering of ceramic profiles.",
+  "description": "CeraLoop: A web application for evaluating and ranking AI-generated pottery image matches.",
   "type": "module",
   "scripts": {
     "dev": "vite",

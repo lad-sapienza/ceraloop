@@ -6,7 +6,7 @@ authors:
     orcid: https://orcid.org/0000-0001-5250-927X
   - name: "LAD Sapienza"
     url: "https://lad.uniroma1.it/"
-title: "CeraLoop: A web application for providing human feedback on AI-generated clustering of ceramic profiles."
+title: "CeraLoop: A web application for evaluating and ranking AI-generated pottery image matches."
 version: 1.0.0
 date-released: 2025-10-23
 license: "MIT"
