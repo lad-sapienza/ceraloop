@@ -236,6 +236,9 @@ If you use this software, please cite it. A `CITATION.cff` file is provided with
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `VITE_DIRECTUS_URL` | Your Directus backend URL (with trailing slash) | `https://db.example.com/` |
+| `VITE_DIRECTUS_DEFAULT_ROLE` | UUID of the default Directus role assigned to newly registered users (client-side fallback). Prefer setting this on the server using a Directus Preset on the `users` collection. | `19239f45-2433-471b-bfbf-4817559adf22` |
+
+Security tip: The role UUID is not sensitive. However, the recommended approach is to configure a Preset in Directus that enforces the `role` (and `status`) for created users, and to remove `role` from the client payload entirely. The env var here serves as a convenience fallback.
 
 ## Troubleshooting
 

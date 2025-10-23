@@ -28,6 +28,8 @@ jobs:
       - name: Build
         env:
           VITE_DIRECTUS_URL: "https://db.lad-sapienza.it/ceraloop/"
+          # Default role for newly registered users (UUID). Consider moving this to repo Variables (vars) or Secrets.
+          VITE_DIRECTUS_DEFAULT_ROLE: "19239f45-2433-471b-bfbf-4817559adf22"
         run: npm run build
 
       - name: Upload artifact

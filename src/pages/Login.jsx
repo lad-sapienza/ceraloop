@@ -145,11 +145,14 @@ export default function Login() {
                     }
 
                     // Create user
+                    const defaultRole = import.meta.env.VITE_DIRECTUS_DEFAULT_ROLE
                     const body = {
                       email: rEmail.trim().toLowerCase(),
                       password: rPassword,
                       first_name: rFirstName || null,
                       last_name: rLastName || null,
+                      // Assign default role (site-specific). Prefer setting via Directus Presets; include only if provided via env.
+                      ...(defaultRole ? { role: defaultRole } : {}),
                       ...(avatarId ? { avatar: avatarId } : {}),
                     }
                     await axios.post(`${base}/users`, body)
