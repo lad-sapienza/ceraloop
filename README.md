@@ -217,6 +217,17 @@ This project is deployed via GitHub Actions to GitHub Pages and a custom domain.
 
 After setting the custom domain in the repo settings (Pages), wait for certificate provisioning and then enable “Enforce HTTPS”.
 
+### CI variables (GitHub Actions)
+
+The build reads environment variables from repository Variables:
+
+- `VITE_DIRECTUS_URL`
+- `VITE_DIRECTUS_DEFAULT_ROLE` (optional; leave unset if you enforce role via Directus Presets)
+
+Set them in: GitHub → Repository → Settings → Secrets and variables → Actions → Variables → New variable.
+
+The workflow references them as `${{ vars.VITE_DIRECTUS_URL }}` and `${{ vars.VITE_DIRECTUS_DEFAULT_ROLE }}`.
+
 ### Routing on static hosts (deep links)
 
 This is a Single Page App. Direct links like `/login` would 404 on static hosting. We ship a `public/404.html` that redirects back to `/` and the app restores the intended route.
