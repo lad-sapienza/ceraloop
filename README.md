@@ -20,6 +20,11 @@ A web application for evaluating and ranking AI-generated pottery image matches.
 - 💾 **Auto-save**: Evaluations are saved with weighted scores (1.0 to 0.1)
 - 👆 **Touch-friendly controls**: Move items with left/right buttons (no drag required)
 - 📝 **Recent submissions**: See your last 5 evaluations and delete with confirmation
+- 👤 **User menu with avatar**: Dropdown menu with avatar; color ring shows profile status (red: missing, yellow: incomplete, green: complete)
+- 🙋 **About me profile**: Provide background info used to weight feedback (education, archaeology experience, pottery documentation experience, notes)
+- 🧾 **Help content (Markdown)**: Dedicated Help page and a login modal rendering the same `help.md` content, with dark-mode friendly typography
+- 🧭 **Footer**: Simple footer across all pages with MIT license and credits
+- 🧑‍💻 **Self-registration**: Users can create an account (email entered twice), optional avatar upload; admin activates accounts
 
 ### Dashboard
 The main evaluation interface where users can:
@@ -35,10 +40,19 @@ Progress visualization showing:
 - Personalized messages based on progress
 - User profile with avatar
 
+### About me
+Give us short background info to help interpret and weight your feedback:
+- Educational qualification (checkboxes)
+- Experience in archaeology (none/0, up to 5 years/5, up to 10 years/10, more than 10 years/10+)
+- Experience with documentation and study of pottery (same values as above)
+- More about me (free text)
+
+Defaults: if empty, we use safe defaults (e.g., education = ["None"], experience = "0"). You can edit these anytime.
+
 ## Tech Stack
 
 - **Frontend**: React 18, Vite
-- **Styling**: Tailwind CSS with custom utilities
+- **Styling**: Tailwind CSS with custom utilities + Typography plugin for Markdown
 - **Routing**: React Router v6
 - **API Client**: Axios with interceptors
 - **Backend**: Directus (Headless CMS)
@@ -63,6 +77,8 @@ Progress visualization showing:
    ```bash
    npm install
    ```
+
+   This project also uses Tailwind Typography and react-markdown (already listed in package.json).
 
 3. **Configure environment variables**
    
@@ -124,13 +140,17 @@ src/
 ├── components/
 │   ├── AuthImage.jsx       # Authenticated image loader with UUID handling
 │   ├── ImagePanel.jsx      # Draggable image container with enable/disable
-│   └── Navbar.jsx          # Fixed navigation with theme toggle
+│   └── Navbar.jsx          # Fixed navigation with theme toggle + user menu
 ├── context/
 │   └── ThemeContext.jsx    # Dark/light mode context provider
 ├── pages/
 │   ├── Dashboard.jsx       # Main evaluation interface
 │   ├── Login.jsx           # Authentication page
-│   └── Report.jsx          # Progress visualization page
+│   ├── Report.jsx          # Progress visualization page
+│   ├── Help.jsx            # Markdown help page (renders src/pages/help.md)
+│   └── AboutMe.jsx         # CRU page for user_information
+│
+│   ├── help.md             # Markdown source for Help page and login modal
 ├── services/
 │   ├── api.js              # Axios instance with auth interceptors
 │   └── auth.js             # Authentication utilities
@@ -150,11 +170,14 @@ src/
    - Click the eye icon to disable images from consideration
    - Click "Save Selection" to submit your evaluation
 3. **Track Progress**: Visit the Report page to see your completion status
+   4. **About me**: Fill in your background once (you can update later) to help weight your feedback. The avatar ring shows status: red (missing), yellow (incomplete), green (complete).
 
 ### For Administrators
 
 1. **Add Items**: Upload pottery images to `model_output` collection in Directus
 2. **Manage Users**: Create user accounts with appropriate roles
+   - Optional: enable self-registration by allowing Public/Guest to POST `/users` and (optionally) `/files` for avatar uploads
+   - Ensure `user_information` permissions allow users to create/read/update their own record (filter by `user_created`)
 3. **View Results**: Query `user_feedbacks` collection for evaluation data
 4. **Export Data**: Use Directus API or export features for analysis
 
@@ -179,6 +202,10 @@ npm run preview
 - **Weighted Scoring**: Auto-generates scores from 1.0 (rank 1) to 0.1 (rank 10), 0 for disabled
 - **Touch Controls**: Up/Down (Left/Right) buttons to reorder without drag & drop
 - **Recent Records**: Fetch last 5 `user_feedbacks` by user, with delete confirmation modal
+- **User Menu**: Avatar fetched from Directus Files/Assets. Ring color from `user_information` completeness.
+- **About Me (CRU)**: Reads the current user's `user_information`. Creates if missing; updates otherwise. Fields include education (checkboxes), experiences (selects), notes.
+- **Help Modal**: Login page renders `help.md` in a scrollable modal via `react-markdown`.
+- **Footer**: Consistent credits and MIT license across pages.
 
 ## Deployment
 
@@ -193,6 +220,12 @@ After setting the custom domain in the repo settings (Pages), wait for certifica
 ### Routing on static hosts (deep links)
 
 This is a Single Page App. Direct links like `/login` would 404 on static hosting. We ship a `public/404.html` that redirects back to `/` and the app restores the intended route.
+
+### Routes
+- `/` Dashboard
+- `/report` Report
+- `/help` Help (Markdown)
+- `/about` About me (user profile info)
 
 ## Citation
 
@@ -212,6 +245,8 @@ If you use this software, please cite it. A `CITATION.cff` file is provided with
 - `/users/me` returns only `id`: ensure your role has read access to `directus_users` fields (`id, first_name, last_name, email, avatar`).
 - HTTPS not working on custom domain: wait for GitHub Pages to provision the certificate, then enable “Enforce HTTPS”.
 - Deep links 404 on Pages: make sure `public/404.html` is deployed.
+- Help markdown not styled: verify Tailwind Typography plugin is installed and enabled in `tailwind.config.cjs` and that `help.md` is imported with `?raw`.
+- Self-registration fails: ensure your Directus role permits POST `/users` (and `/files` for avatar). Alternatively handle registration via a secure backend.
 
 ## Contributing
 
