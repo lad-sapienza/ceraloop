@@ -12,8 +12,6 @@ A web application for evaluating and ranking AI-generated pottery image matches.
 - 🔄 **Smart Loading**: Automatically fetches only unreviewed items per user
 - 💾 **Auto-save**: Evaluations are saved with weighted scores (1.0 to 0.1)
 
-## Screenshots
-
 ### Dashboard
 The main evaluation interface where users can:
 - View reference pottery images
@@ -191,14 +189,14 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- Built for the LAD-Sapienza research project
+- Built for the [LAD: LAboratorio di Archeologia Digitale alla Sapienza](https://lad.saras.uniroma1.it) research project
 - Powered by [Directus](https://directus.io/)
 
 ## Support
 
 For issues or questions, please open an issue on GitHub.
 
-**Live Demo**: https://lad-sapienza.github.io/ceraloop/
+**Live Demo**: https://ceraloop.lad-sapienza.it/
 
 ---
 

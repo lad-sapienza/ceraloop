@@ -1,7 +1,8 @@
 {
-  "name": "directus-auth-spa",
-  "version": "0.1.0",
-  "private": true,
+  "name": "CeraLoop",
+  "version": "1.0.0",
+  "private": false,
+  "description": "CeraLoop: A web application for providing human feedback on AI-generated clustering of ceramic profiles.",
   "type": "module",
   "scripts": {
     "dev": "vite",
