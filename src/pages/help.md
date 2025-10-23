@@ -1,7 +1,4 @@
-![](https://ceraloop.lad-sapienza.it/CeraLoop.png){width=200}
-
 **🇬🇧 English version below**
-
 
 # Benvenuti a **CeraLoop**
 
