@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { login as directusLogin } from '../services/auth'
 import { useTheme } from '../context/ThemeContext'
-import Footer from '../components/Footer'
 import axios from 'axios'
 import ReactMarkdown from 'react-markdown'
 import helpContent from './help.md?raw'
@@ -232,15 +231,14 @@ export default function Login() {
           </div>
 
           <p className="text-sm text-gray-600 dark:text-gray-400 text-center my-6 border-t pt-4 border-blue-600 dark:border-blue-400">
-            Powered by{' '}
             <a 
               href="https://lad.saras.uniroma1.it/" 
               target="_blank" 
               rel="noopener noreferrer"
               className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 flex flex-col items-center gap-2"
             >
-              LAD: Laboratorio di Archeologia Digitale alla Sapienza
               <img src="/LAD-logo.png" alt="LAD Logo" className="h-10" />
+              LAD: Laboratorio di Archeologia Digitale alla Sapienza
             </a>
           </p>
         </div>
@@ -269,7 +267,6 @@ export default function Login() {
           </div>
         </div>
       )}
-      <Footer fixed />
     </div>
   )
 }

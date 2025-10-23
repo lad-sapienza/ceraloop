@@ -386,12 +386,15 @@ export default function Dashboard() {
   setSaveSuccess(true)
   // Refresh recent records list
   fetchRecentRecords()
-      
-      // Load the next item after a short delay
-      setTimeout(() => {
-        setSaveSuccess(false)
-        loadNextModelOutput()
-      }, 1500)
+
+  // After a short delay, reload the page so the app fetches the newly-created record set
+  // and the server can return the next unreviewed item.
+  setTimeout(() => {
+    // reset visual success state first for a cleaner UX if needed
+    setSaveSuccess(false)
+    // Full page reload to pick up the new record from the backend
+    window.location.reload()
+  }, 1200)
 
     } catch (err) {
       console.error('Failed to save feedback:', err)

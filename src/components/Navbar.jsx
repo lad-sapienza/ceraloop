@@ -133,48 +133,67 @@ export default function Navbar() {
           {/* Left: Logo and Menu Items */}
           <div className="flex items-center gap-6">
             <Link to="/">
-              <img src="/CeraLoop.png" alt="CeraLoop" className="h-10" />
+              <img src="/CeraLoop.png" alt="CeraLoop" className="h-10 min-w-[36px]" />
             </Link>
             <div className="flex items-center gap-4">
-              <Link 
+              <Link
                 to="/"
-                className={`font-medium transition ${
-                  isActive('/') 
-                    ? 'text-indigo-600 dark:text-indigo-400' 
+                aria-label="Home"
+                className={`font-medium transition flex items-center gap-2 ${
+                  isActive('/')
+                    ? 'text-indigo-600 dark:text-indigo-400'
                     : 'text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400'
                 }`}
               >
-                Home
+                {/* Icon for small screens */}
+                <svg className="w-5 h-5 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10.5l9-7 9 7M4.5 10.5V21h6v-6h3v6h6V10.5" />
+                </svg>
+                {/* Text for md+ screens */}
+                <span className="hidden md:inline">Home</span>
               </Link>
-              <Link 
+              <Link
                 to="/report"
-                className={`font-medium transition ${
-                  isActive('/report') 
-                    ? 'text-indigo-600 dark:text-indigo-400' 
+                aria-label="Report"
+                className={`font-medium transition flex items-center gap-2 ${
+                  isActive('/report')
+                    ? 'text-indigo-600 dark:text-indigo-400'
                     : 'text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400'
                 }`}
               >
-                Report
+                <svg className="w-5 h-5 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 19h16M7 10h2v6H7zm4-6h2v12h-2zm4 8h2v4h-2z" />
+                </svg>
+                <span className="hidden md:inline">Report</span>
               </Link>
-              <Link 
-                to="/help"
-                className={`font-medium transition ${
-                  isActive('/help') 
-                    ? 'text-indigo-600 dark:text-indigo-400' 
-                    : 'text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400'
-                }`}
-              >
-                Help
-              </Link>
-              <Link 
+              <Link
                 to="/about"
-                className={`font-medium transition ${
-                  isActive('/about') 
-                    ? 'text-indigo-600 dark:text-indigo-400' 
+                aria-label="About me"
+                className={`font-medium transition flex items-center gap-2 ${
+                  isActive('/about')
+                    ? 'text-indigo-600 dark:text-indigo-400'
                     : 'text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400'
                 }`}
               >
-                About me
+                <svg className="w-5 h-5 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A9 9 0 1118.88 17.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="hidden md:inline">About me</span>
+              </Link>
+              <Link
+                to="/help"
+                aria-label="Help"
+                className={`font-medium transition flex items-center gap-2 ${
+                  isActive('/help')
+                    ? 'text-indigo-600 dark:text-indigo-400'
+                    : 'text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400'
+                }`}
+              >
+                <svg className="w-5 h-5 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10a4 4 0 118 0c0 2.5-2 3-3 4m-1 4h.01" />
+                  <circle cx="12" cy="12" r="9" strokeWidth={2} />
+                </svg>
+                <span className="hidden md:inline">Help</span>
               </Link>
             </div>
           </div>
