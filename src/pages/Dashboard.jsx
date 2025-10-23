@@ -19,6 +19,10 @@ export default function Dashboard() {
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [saveError, setSaveError] = useState(null)
+  const [recentRecords, setRecentRecords] = useState([])
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [recordToDelete, setRecordToDelete] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     async function fetchProfile() {
@@ -377,8 +381,10 @@ export default function Dashboard() {
 
       console.log('Feedback saved successfully:', response.data)
 
-      // Success handling
-      setSaveSuccess(true)
+  // Success handling
+  setSaveSuccess(true)
+  // Refresh recent records list
+  fetchRecentRecords()
       
       // Load the next item after a short delay
       setTimeout(() => {
@@ -398,6 +404,59 @@ export default function Dashboard() {
       
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  // Fetch last 5 records created by current user
+  const fetchRecentRecords = async () => {
+    try {
+      // Ensure we have the current user id
+      const userRes = await api.get('/users/me', { params: { fields: 'id' } })
+      const userId = (userRes.data?.data || userRes.data)?.id
+      if (!userId) return
+
+      const res = await api.get('/items/user_feedbacks', {
+        params: {
+          'filter[user_created][_eq]': userId,
+          'fields': 'id,date_created',
+          'sort': '-date_created',
+          'limit': 5
+        }
+      })
+      const data = res.data?.data || res.data || []
+      setRecentRecords(data)
+    } catch (e) {
+      // Silently ignore for now
+    }
+  }
+
+  // Load recent records on mount
+  useEffect(() => {
+    fetchRecentRecords()
+  }, [])
+
+  const promptDeleteRecord = (record) => {
+    setRecordToDelete(record)
+    setDeleteModalOpen(true)
+  }
+
+  const cancelDelete = () => {
+    setDeleteModalOpen(false)
+    setRecordToDelete(null)
+  }
+
+  const confirmDelete = async () => {
+    if (!recordToDelete) return
+    try {
+      setIsDeleting(true)
+      await api.delete(`/items/user_feedbacks/${recordToDelete.id}`)
+      setRecentRecords(prev => prev.filter(r => r.id !== recordToDelete.id))
+      setDeleteModalOpen(false)
+      setRecordToDelete(null)
+    } catch (e) {
+      // Optional: surface an error state
+    } finally {
+      setIsDeleting(false)
     }
   }
 
@@ -487,6 +546,42 @@ export default function Dashboard() {
                         </div>
                       </div>
                     )}
+
+                    {/* Recent Records List */}
+                    <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between mb-2">
+                        <h5 className="text-sm font-semibold dark:text-gray-200">Your recent submissions</h5>
+                        <button
+                          onClick={fetchRecentRecords}
+                          className="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
+                        >
+                          Refresh
+                        </button>
+                      </div>
+                      {recentRecords.length === 0 ? (
+                        <div className="text-xs text-gray-500 dark:text-gray-400">No recent submissions</div>
+                      ) : (
+                        <div className="space-y-2">
+                          {recentRecords.map((rec) => (
+                            <div key={rec.id} className="flex items-center justify-between text-sm bg-white dark:bg-slate-800 rounded-md px-3 py-2 border border-gray-200 dark:border-gray-700">
+                              <div className="flex items-center gap-3">
+                                <span className="font-mono text-gray-800 dark:text-gray-200">#{rec.id}</span>
+                                <span className="text-gray-500 dark:text-gray-400">{new Date(rec.date_created).toLocaleString()}</span>
+                              </div>
+                              <button
+                                onClick={() => promptDeleteRecord(rec)}
+                                className="p-2 rounded bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50"
+                                title="Delete record"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10" />
+                                </svg>
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
 
 
                     
@@ -589,6 +684,41 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+        {/* Delete Confirmation Modal */}
+        {deleteModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/50" onClick={cancelDelete}></div>
+            <div className="relative bg-white dark:bg-slate-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-full max-w-md mx-4 p-5">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-base font-semibold mb-1 dark:text-gray-100">Delete submission</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">Are you sure you want to delete record #{recordToDelete?.id}? This action cannot be undone.</p>
+                </div>
+              </div>
+              <div className="mt-5 flex justify-end gap-3">
+                <button
+                  onClick={cancelDelete}
+                  disabled={isDeleting}
+                  className="px-3 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  disabled={isDeleting}
+                  className={`px-3 py-2 rounded text-white text-sm ${isDeleting ? 'bg-red-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'}`}
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         </main>
       </div>
     </>

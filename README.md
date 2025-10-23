@@ -18,6 +18,8 @@ A web application for evaluating and ranking AI-generated pottery image matches.
 - 📱 **Responsive Design**: Works seamlessly across desktop and mobile devices
 - 🔄 **Smart Loading**: Automatically fetches only unreviewed items per user
 - 💾 **Auto-save**: Evaluations are saved with weighted scores (1.0 to 0.1)
+- 👆 **Touch-friendly controls**: Move items with left/right buttons (no drag required)
+- 📝 **Recent submissions**: See your last 5 evaluations and delete with confirmation
 
 ### Dashboard
 The main evaluation interface where users can:
@@ -53,8 +55,8 @@ Progress visualization showing:
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/CeraLoop.git
-   cd CeraLoop
+   git clone https://github.com/lad-sapienza/ceraloop.git
+   cd ceraloop
    ```
 
 2. **Install dependencies**
@@ -175,12 +177,41 @@ npm run preview
 - **Drag & Drop**: HTML5 native drag events with visual placeholders
 - **Smart Filtering**: Uses `_nin` (not in) operator to exclude already-evaluated items
 - **Weighted Scoring**: Auto-generates scores from 1.0 (rank 1) to 0.1 (rank 10), 0 for disabled
+- **Touch Controls**: Up/Down (Left/Right) buttons to reorder without drag & drop
+- **Recent Records**: Fetch last 5 `user_feedbacks` by user, with delete confirmation modal
+
+## Deployment
+
+This project is deployed via GitHub Actions to GitHub Pages and a custom domain.
+
+- GitHub Actions workflow: `.github/workflows/deploy.yml` builds and publishes `dist/`
+- Custom domain: create `public/CNAME` with your domain (e.g. `ceraloop.lad-sapienza.it`)
+- Vite base URL: configured to `/` for custom domains in `vite.config.js`
+
+After setting the custom domain in the repo settings (Pages), wait for certificate provisioning and then enable “Enforce HTTPS”.
+
+### Routing on static hosts (deep links)
+
+This is a Single Page App. Direct links like `/login` would 404 on static hosting. We ship a `public/404.html` that redirects back to `/` and the app restores the intended route.
+
+## Citation
+
+If you use this software, please cite it. A `CITATION.cff` file is provided with both individual and organizational authorship (LAD Sapienza).
 
 ## Environment Variables
 
 | Variable | Description | Example |
 |----------|-------------|---------|
 | `VITE_DIRECTUS_URL` | Your Directus backend URL (with trailing slash) | `https://db.example.com/` |
+
+## Troubleshooting
+
+- CORS errors to Directus: enable CORS in Directus and add your app origin(s), e.g.
+   - `CORS_ENABLED=true`
+   - `CORS_ORIGIN=https://ceraloop.lad-sapienza.it,http://localhost:5173`
+- `/users/me` returns only `id`: ensure your role has read access to `directus_users` fields (`id, first_name, last_name, email, avatar`).
+- HTTPS not working on custom domain: wait for GitHub Pages to provision the certificate, then enable “Enforce HTTPS”.
+- Deep links 404 on Pages: make sure `public/404.html` is deployed.
 
 ## Contributing
 
