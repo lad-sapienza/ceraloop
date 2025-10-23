@@ -233,6 +233,54 @@ export default function Dashboard() {
     })
   }
 
+  const handleMoveUp = (index) => {
+    if (index === 0) return // Already at top
+    
+    const newImages = [...matchImages]
+    const temp = newImages[index]
+    newImages[index] = newImages[index - 1]
+    newImages[index - 1] = temp
+    
+    // Update grayed images indices
+    const newGrayedImages = new Set()
+    grayedImages.forEach(oldIndex => {
+      if (oldIndex === index) {
+        newGrayedImages.add(index - 1)
+      } else if (oldIndex === index - 1) {
+        newGrayedImages.add(index)
+      } else {
+        newGrayedImages.add(oldIndex)
+      }
+    })
+    
+    setMatchImages(newImages)
+    setGrayedImages(newGrayedImages)
+  }
+
+  const handleMoveDown = (index) => {
+    if (index === matchImages.length - 1) return // Already at bottom
+    
+    const newImages = [...matchImages]
+    const temp = newImages[index]
+    newImages[index] = newImages[index + 1]
+    newImages[index + 1] = temp
+    
+    // Update grayed images indices
+    const newGrayedImages = new Set()
+    grayedImages.forEach(oldIndex => {
+      if (oldIndex === index) {
+        newGrayedImages.add(index + 1)
+      } else if (oldIndex === index + 1) {
+        newGrayedImages.add(index)
+      } else {
+        newGrayedImages.add(oldIndex)
+      }
+    })
+    
+    setMatchImages(newImages)
+    setGrayedImages(newGrayedImages)
+  }
+
   const loadNextModelOutput = async () => {
     try {
       setModelLoading(true)
@@ -526,6 +574,10 @@ export default function Dashboard() {
                             onDragOver={handleDragOver}
                             onDrop={handleDrop}
                             onDragEnd={handleDragEnd}
+                            onMoveUp={handleMoveUp}
+                            onMoveDown={handleMoveDown}
+                            isFirst={index === 0}
+                            isLast={index === matchImages.length - 1}
                           />
                         </div>
                       ))}

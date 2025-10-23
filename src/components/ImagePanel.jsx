@@ -2,7 +2,20 @@ import React from 'react'
 import AuthImage from './AuthImage'
 
 // Draggable Image Panel Component
-export default function ImagePanel({ match, index, isGrayed, onToggleGray, onDragStart, onDragOver, onDrop, onDragEnd }) {
+export default function ImagePanel({ 
+  match, 
+  index, 
+  isGrayed, 
+  onToggleGray, 
+  onDragStart, 
+  onDragOver, 
+  onDrop, 
+  onDragEnd,
+  onMoveUp,
+  onMoveDown,
+  isFirst,
+  isLast
+}) {
   return (
     <div
       draggable
@@ -21,6 +34,33 @@ export default function ImagePanel({ match, index, isGrayed, onToggleGray, onDra
         />
       </div>
       <div className="flex gap-2 pt-2">
+        {/* Move Left Button */}
+        {!isFirst && (
+          <button
+            onClick={() => onMoveUp(index)}
+            className="px-3 py-2 rounded text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors"
+            title="Move left"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
+        
+        {/* Move Right Button */}
+        {!isLast && (
+          <button
+            onClick={() => onMoveDown(index)}
+            className="px-3 py-2 rounded text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors"
+            title="Move right"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
+        
+        {/* Enable/Disable Button */}
         <button
           onClick={() => onToggleGray(index)}
           className={`flex-1 px-3 py-2 rounded text-xs font-medium transition-colors ${
