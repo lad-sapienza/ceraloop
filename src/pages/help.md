@@ -1,13 +1,9 @@
-<p align="center">
-  <img src="https://ceraloop.lad-sapienza.it/CeraLoop.png" alt="CeraLoop Logo" width="200">
-</p>
+![](https://ceraloop.lad-sapienza.it/CeraLoop.png){width=200}
 
-<p align="center">
-  <strong>🇬🇧 English version below</strong><br>
-  <em>Scroll down for the English version</em>
-</p>
+**🇬🇧 English version below**
 
-# Benvenuti a CeraLoop
+
+# Benvenuti a **CeraLoop**
 
 In questa pagina trovate alcune indicazioni pratiche sul funzionamento di **CeraLoop**, un'applicazione progettata per raccogliere feedback da esperti sul riconoscimento delle forme ceramiche attraverso l’analisi dei profili.
 
@@ -60,11 +56,11 @@ L’obiettivo non è trovare *il* miglior confronto, ma:
 - **Anonimizzazione**: tutti i dati saranno anonimizzati; le email verranno criptate e non saranno mai rese pubbliche.  
 - **Riuso dei dati**: i dati raccolti verranno rilasciati in forma anonima per il possibile riutilizzo da parte di terzi, sotto una **licenza aperta e permissiva**.  
 
-<hr style="border: 2px solid #444; margin: 3em 0;">
+---
 
-# Welcome to CeraLoop
+# Welcome to **CeraLoop**
 
-This page provides some practical guidance on how to use **CeraLoop**, an application designed to collect expert feedback on the recognition of ceramic shapes through profile analysis.
+This page provides some practical guidance on how to use **CeraLoop**, a web app designed to collect expert feedback on the recognition of ceramic shapes through profile analysis.
 
 ---
 
@@ -112,4 +108,6 @@ The goal is not to find *the* most precise comparison, but rather to:
 - **Anonymisation**: all data will be anonymised; email addresses will be encrypted and never made public.  
 - **Data reuse**: anonymised data will be released for potential reuse by third parties under a **permissive open licence**.  
 
----
+
+
+
