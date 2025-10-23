@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Report from './pages/Report'
+import AboutMe from './pages/AboutMe'
 import Help from './pages/Help'
 
 function RequireAuth({ children }) {
@@ -28,6 +29,14 @@ export default function App() {
         element={
           <RequireAuth>
             <Report />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/about"
+        element={
+          <RequireAuth>
+            <AboutMe />
           </RequireAuth>
         }
       />

@@ -12,6 +12,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [userName, setUserName] = useState('')
   const [avatarUrl, setAvatarUrl] = useState(null)
+  const [profileStatus, setProfileStatus] = useState('none') // none | incomplete | complete
   const menuRef = useRef(null)
 
   const logout = () => {
@@ -45,7 +46,7 @@ export default function Navbar() {
   }, [location.pathname])
 
   useEffect(() => {
-    // Load current user basic info + avatar
+    // Load current user basic info + avatar and profile status
     async function loadUser() {
       try {
         const userRes = await api.get('/users/me', {
@@ -77,6 +78,39 @@ export default function Navbar() {
             }
           } catch (e) {
             // Avatar optional: ignore failures
+          }
+        }
+
+        // Evaluate user_information profile status
+        if (user?.id) {
+          try {
+            const infoRes = await api.get('/items/user_information', {
+              params: {
+                'filter[user_created][_eq]': user.id,
+                fields: 'educational_qualification,experience_in_archaeology,experience_with_documentation_and_study_of_pottery,more_about_me',
+                limit: 1
+              }
+            })
+            const rec = (infoRes.data?.data || infoRes.data || [])[0]
+            if (!rec) {
+              setProfileStatus('none')
+            } else {
+              const edu = Array.isArray(rec.educational_qualification) ? rec.educational_qualification : []
+              const expA = String(rec.experience_in_archaeology ?? '')
+              const expP = String(rec.experience_with_documentation_and_study_of_pottery ?? '')
+              const more = rec.more_about_me || ''
+              const isDefaultEdu = edu.length === 0 || (edu.length === 1 && edu[0] === 'None')
+              const isDefaultExpA = expA === '' || expA === '0'
+              const isDefaultExpP = expP === '' || expP === '0'
+              const isMoreEmpty = !more || more.trim() === ''
+              if (!isDefaultEdu || !isDefaultExpA || !isDefaultExpP || !isMoreEmpty) {
+                setProfileStatus('complete')
+              } else {
+                setProfileStatus('incomplete')
+              }
+            }
+          } catch (e) {
+            setProfileStatus('none')
           }
         }
       } catch (e) {
@@ -132,6 +166,16 @@ export default function Navbar() {
               >
                 Help
               </Link>
+              <Link 
+                to="/about"
+                className={`font-medium transition ${
+                  isActive('/about') 
+                    ? 'text-indigo-600 dark:text-indigo-400' 
+                    : 'text-gray-700 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400'
+                }`}
+              >
+                About me
+              </Link>
             </div>
           </div>
 
@@ -160,15 +204,29 @@ export default function Navbar() {
                 aria-haspopup="menu"
                 aria-expanded={menuOpen}
               >
-                <div className="w-9 h-9 rounded-full ring-2 ring-indigo-200 dark:ring-indigo-700 overflow-hidden bg-indigo-100 dark:bg-slate-600 flex items-center justify-center">
-                  {avatarUrl ? (
-                    <img src={avatarUrl} alt={userName || 'User'} className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="text-sm font-medium text-indigo-700 dark:text-slate-200">
-                      {userName ? userName.charAt(0).toUpperCase() : 'U'}
-                    </span>
-                  )}
-                </div>
+                {(() => {
+                  const ringColor = profileStatus === 'complete' ? 'ring-green-500' : profileStatus === 'incomplete' ? 'ring-yellow-500' : 'ring-red-500'
+                  return (
+                    <div
+                      className={`w-9 h-9 rounded-full ring-2 ${ringColor} overflow-hidden bg-indigo-100 dark:bg-slate-600 flex items-center justify-center`}
+                      title={
+                        profileStatus === 'complete'
+                          ? 'Profile information: complete'
+                          : profileStatus === 'incomplete'
+                          ? 'Profile information: incomplete'
+                          : 'Profile information: missing'
+                      }
+                    >
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt={userName || 'User'} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-sm font-medium text-indigo-700 dark:text-slate-200">
+                          {userName ? userName.charAt(0).toUpperCase() : 'U'}
+                        </span>
+                      )}
+                    </div>
+                  )
+                })()}
                 <svg className="w-4 h-4 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
@@ -184,6 +242,16 @@ export default function Navbar() {
                       Signed in as <span className="font-medium">{userName}</span>
                     </div>
                   )}
+                  <button
+                    onClick={() => { setMenuOpen(false); navigate('/about') }}
+                    className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-600 flex items-center gap-2"
+                    role="menuitem"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0v6" />
+                    </svg>
+                    About me
+                  </button>
                   <button
                     onClick={logout}
                     className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-600 flex items-center gap-2"
