@@ -133,6 +133,70 @@ Users need the following permissions:
    - Create: All fields
    - Read: Filter by `user_created` = `$CURRENT_USER`
 
+## Security Configuration
+
+### Server-Side Rate Limiting (Directus)
+
+To protect against brute force attacks on the login endpoint, enable rate limiting in your Directus instance. Add these environment variables to your Directus `.env` file:
+
+```env
+# Enable rate limiting
+RATE_LIMITER_ENABLED=true
+
+# Allow 25 requests per IP address
+RATE_LIMITER_POINTS=25
+
+# Within a 60-second window
+RATE_LIMITER_DURATION=60
+
+# Store rate limit data in memory (or use Redis for distributed setups)
+RATE_LIMITER_STORE=memory
+```
+
+**Recommended values:**
+- Development: `RATE_LIMITER_POINTS=100` (more permissive for testing)
+- Production: `RATE_LIMITER_POINTS=25` (stricter limits)
+
+For high-traffic environments, consider using Redis as the store:
+```env
+RATE_LIMITER_STORE=redis
+RATE_LIMITER_REDIS_HOST=localhost
+RATE_LIMITER_REDIS_PORT=6379
+```
+
+**Alternative: Web Server Rate Limiting**
+
+If you're using Nginx or Apache as a reverse proxy, you can also implement rate limiting at that level:
+
+**Nginx example:**
+```nginx
+http {
+    limit_req_zone $binary_remote_addr zone=login_limit:10m rate=5r/m;
+    
+    server {
+        location /auth/login {
+            limit_req zone=login_limit burst=3 nodelay;
+            proxy_pass http://directus:8055;
+        }
+    }
+}
+```
+
+This limits login attempts to 5 per minute per IP address, with a burst allowance of 3 additional requests.
+
+### Client-Side Protection
+
+The login form also implements client-side protection against brute force attacks:
+
+1. **Account Lockout**: After 5 failed login attempts, the account is locked for 5 minutes
+2. **Progressive Delays**: Each failed attempt introduces exponential backoff (1s → 2s → 4s → 8s → 16s max)
+3. **Generic Error Messages**: All login errors show "Invalid email or password" to avoid information disclosure
+4. **Automatic Reset**: Successful login resets all counters and delays
+
+These client-side measures complement server-side rate limiting and provide immediate feedback to legitimate users while slowing down attackers.
+
+**Note**: Client-side protection can be bypassed by sophisticated attackers, so server-side rate limiting (solution 1) is essential for production deployments.
+
 ## Project Structure
 
 ```
