@@ -25,6 +25,7 @@ A web application for evaluating and ranking AI-generated pottery image matches.
 - 🧾 **Help content (Markdown)**: Dedicated Help page and a login modal rendering the same `help.md` content, with dark-mode friendly typography
 - 🧭 **Footer**: Simple footer across all pages with MIT license and credits
 - 🧑‍💻 **Self-registration**: Users can create an account (email entered twice), optional avatar upload; admin activates accounts
+- ⏱️ **Evaluation time tracking**: Automatically tracks time from first interaction to save (in seconds)
 
 ### Dashboard
 The main evaluation interface where users can:
@@ -32,6 +33,7 @@ The main evaluation interface where users can:
 - Drag and drop to reorder matched images
 - Enable/disable images from consideration
 - Save evaluations with automatic weighted scoring
+- Time tracking starts on first interaction (drag, discard, or move)
 
 ### Report
 Progress visualization showing:
@@ -114,7 +116,9 @@ Defaults: if empty, we use safe defaults (e.g., education = ["None"], experience
 - `item` (string, references model_output.item)
 - `match_1` through `match_10` (string, ordered filenames)
 - `score_1` through `score_10` (float, weights from 1.0 to 0.1)
+- `evaluation_time` (integer, optional - time in seconds from first interaction to save)
 - `user_created` (UUID, auto-populated)
+- `date_created` (timestamp, auto-populated)
 
 ### Permissions
 
@@ -270,6 +274,11 @@ npm run preview
 - **About Me (CRU)**: Reads the current user's `user_information`. Creates if missing; updates otherwise. Fields include education (checkboxes), experiences (selects), notes.
 - **Help Modal**: Login page renders `help.md` in a scrollable modal via `react-markdown`.
 - **Footer**: Consistent credits and MIT license across pages.
+- **Evaluation Time Tracking**: Measures time from first user interaction (drag, discard, or move) to save. Timer resets for each new item. Stored as `evaluation_time` in seconds. This helps analyze:
+  - Average evaluation time per user
+  - Differences between expert and novice evaluators
+  - Correlation between time spent and evaluation quality
+  - Detection of potentially rushed evaluations
 
 ## Deployment
 

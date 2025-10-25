@@ -25,6 +25,10 @@ export default function Dashboard() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [recordToDelete, setRecordToDelete] = useState(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  
+  // Time tracking - starts on first interaction
+  const [evaluationStartTime, setEvaluationStartTime] = useState(null)
+  const [hasInteracted, setHasInteracted] = useState(false)
 
   useEffect(() => {
     async function fetchProfile() {
@@ -130,8 +134,25 @@ export default function Dashboard() {
     }
   }, [matchImages, grayedImages])
 
+  // Function to start timer on first interaction
+  const startTimerOnFirstInteraction = () => {
+    if (!hasInteracted && !evaluationStartTime) {
+      setEvaluationStartTime(Date.now())
+      setHasInteracted(true)
+    }
+  }
+
+  // Reset timer when loading a new item
+  useEffect(() => {
+    if (modelOutput) {
+      setEvaluationStartTime(null)
+      setHasInteracted(false)
+    }
+  }, [modelOutput])
+
   // Drag and drop handlers
   const handleDragStart = (e, index) => {
+    startTimerOnFirstInteraction()
     setDraggedIndex(index)
     e.dataTransfer.effectAllowed = 'move'
   }
@@ -210,6 +231,7 @@ export default function Dashboard() {
   }
 
   const toggleGray = (index) => {
+    startTimerOnFirstInteraction()
     setGrayedImages(prev => {
       const newSet = new Set(prev)
       if (newSet.has(index)) {
@@ -240,6 +262,7 @@ export default function Dashboard() {
   }
 
   const handleMoveUp = (index) => {
+    startTimerOnFirstInteraction()
     if (index === 0) return // Already at top
     
     const newImages = [...matchImages]
@@ -264,6 +287,7 @@ export default function Dashboard() {
   }
 
   const handleMoveDown = (index) => {
+    startTimerOnFirstInteraction()
     if (index === matchImages.length - 1) return // Already at bottom
     
     const newImages = [...matchImages]
@@ -387,6 +411,17 @@ export default function Dashboard() {
       // Build the payload
       const payload = {
         item: String(modelOutput.item) // Ensure it's a string
+      }
+
+      // Calculate evaluation time in seconds (only if user interacted)
+      let evaluationTimeSeconds = null
+      if (evaluationStartTime && hasInteracted) {
+        evaluationTimeSeconds = Math.round((Date.now() - evaluationStartTime) / 1000)
+      }
+
+      // Add evaluation time if available
+      if (evaluationTimeSeconds !== null) {
+        payload.evaluation_time = evaluationTimeSeconds
       }
 
       // Add match_N and score_N for each item (up to 10)
