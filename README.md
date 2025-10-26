@@ -7,7 +7,9 @@
 [![Vite](https://img.shields.io/badge/Vite-4-646CFF?logo=vite)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 [![Directus](https://img.shields.io/badge/Directus-Backend-6644FF?logo=directus)](https://directus.io/)
-[![DOI](https://zenodo.org/badge/1081266607.svg)](https://doi.org/10.5281/zenodo.17449886)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17449887.svg)](https://doi.org/10.5281/zenodo.17449887)
+
+
 
 
 

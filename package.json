@@ -1,6 +1,6 @@
 {
   "name": "CeraLoop",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": false,
   "description": "CeraLoop: A web application for evaluating and ranking AI-generated pottery image matches.",
   "type": "module",
