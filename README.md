@@ -324,6 +324,45 @@ If you use this software, please cite it. A `CITATION.cff` file is provided with
 
 Security tip: The role UUID is not sensitive. However, the recommended approach is to configure a Preset in Directus that enforces the `role` (and `status`) for created users, and to remove `role` from the client payload entirely. The env var here serves as a convenience fallback.
 
+### Advanced Configuration: Collection Names
+
+CeraLoop supports customizing Directus collection names through environment variables. This enables:
+
+- **Multi-project deployments**: Run separate CeraLoop instances for different artifact types (pottery, coins, inscriptions) within the same Directus instance
+- **A/B testing**: Test different data models or UI versions with different collection sets
+- **Development/staging separation**: Use separate collections for testing without affecting production data
+- **Institution-specific naming**: Adapt to existing database schemas without modifying code
+
+**Available collection name overrides:**
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_COLLECTION_MODEL_OUTPUT` | `model_output` | Main collection with evaluation items and model predictions |
+| `VITE_COLLECTION_USER_FEEDBACKS` | `user_feedbacks` | User evaluations and rankings |
+| `VITE_COLLECTION_USER_INFORMATION` | `user_information` | Extended user profile data |
+| `VITE_COLLECTION_USERS` | `directus_users` | Directus system users collection |
+| `VITE_COLLECTION_FILES` | `directus_files` | Directus system files collection |
+
+**Example: Multi-project setup**
+
+Deploy separate CeraLoop instances for pottery and coins analysis:
+
+```bash
+# Pottery project (.env)
+VITE_DIRECTUS_URL="https://db.lad-sapienza.it/"
+VITE_COLLECTION_MODEL_OUTPUT="pottery_model_output"
+VITE_COLLECTION_USER_FEEDBACKS="pottery_user_feedbacks"
+VITE_COLLECTION_USER_INFORMATION="pottery_user_information"
+
+# Coins project (.env)
+VITE_DIRECTUS_URL="https://db.lad-sapienza.it/"
+VITE_COLLECTION_MODEL_OUTPUT="coins_model_output"
+VITE_COLLECTION_USER_FEEDBACKS="coins_user_feedbacks"
+VITE_COLLECTION_USER_INFORMATION="coins_user_information"
+```
+
+Both instances use the same Directus backend but maintain separate data collections, allowing independent analysis and user assignments.
+
 ## Troubleshooting
 
 - CORS errors to Directus: enable CORS in Directus and add your app origin(s), e.g.
@@ -334,6 +373,245 @@ Security tip: The role UUID is not sensitive. However, the recommended approach 
 - Deep links 404 on Pages: make sure `public/404.html` is deployed.
 - Help markdown not styled: verify Tailwind Typography plugin is installed and enabled in `tailwind.config.cjs` and that `help.md` is imported with `?raw`.
 - Self-registration fails: ensure your Directus role permits POST `/users` (and `/files` for avatar). Alternatively handle registration via a secure backend.
+
+## Data Analysis Methodology
+
+### Overview
+
+CeraLoop collects rich evaluation data that can be analyzed to:
+1. Validate and improve the statistical model's similarity predictions
+2. Understand how humans assess ceramic similarity
+3. Compare expert vs. novice evaluation patterns
+4. Measure inter-rater agreement and consistency
+
+### Data Structure
+
+**Available data points per evaluation:**
+- `item`: Reference pottery ID
+- `match_1` to `match_10`: Ordered similar items (user-ranked)
+- `score_1` to `score_10`: Weights (1.0 → 0.1 for enabled, 0 for disabled)
+- `evaluation_time`: Time spent in seconds
+- `user_created`: User ID (linked to `user_information`)
+- `date_created`: Timestamp
+
+**User context data:**
+- Educational qualification
+- Archaeology experience level (0, 5, 10, 10+)
+- Pottery documentation experience (0, 5, 10, 10+)
+
+### Suggested Analysis Methods
+
+#### 1. **Model Validation: Rank Correlation Analysis**
+
+Compare the statistical model's original ordering with human rankings:
+
+```python
+# For each evaluated item:
+# - model_order: Original match_1...match_10 sequence from model_output
+# - human_order: User's reordered sequence from user_feedbacks
+
+# Calculate Spearman's rank correlation
+from scipy.stats import spearmanr
+correlation, p_value = spearmanr(model_order, human_order)
+
+# Aggregate across all evaluations:
+# - Mean correlation per user
+# - Mean correlation per item
+# - Correlation vs. user experience level
+```
+
+**Key metrics:**
+- **Spearman's ρ**: Measures rank agreement (-1 to +1)
+- **Kendall's τ**: Alternative rank correlation, more robust to ties
+- **Top-k precision**: How often model's top-3 matches human's top-3
+
+#### 2. **Discard Analysis**
+
+Identify patterns in which matches users reject (score = 0):
+
+```python
+# For each match position (1-10):
+discard_rate = (matches_with_score_0 / total_evaluations) * 100
+
+# Questions to explore:
+# - Do later positions (match_8, match_9, match_10) get discarded more?
+# - Which specific items are frequently discarded across users?
+# - Correlation between discard rate and model confidence scores?
+```
+
+**Visualization:**
+- Heatmap: Item × Position showing discard rates
+- Distribution plot: Discard frequency by match position
+
+#### 3. **Inter-Rater Reliability**
+
+For the 200 common items evaluated by all users:
+
+```python
+from sklearn.metrics import cohen_kappa_score
+import krippendorff
+
+# Pairwise Cohen's Kappa between users
+# Or Krippendorff's Alpha for multi-rater scenarios
+
+# Create matrix: users × items × rankings
+# Calculate agreement scores
+```
+
+**Key metrics:**
+- **Cohen's Kappa**: Agreement between pairs (κ > 0.6 = substantial)
+- **Krippendorff's Alpha**: Multi-rater agreement (α > 0.8 = reliable)
+- **Intraclass Correlation (ICC)**: Consistency across raters
+
+#### 4. **Expert vs. Novice Comparison**
+
+Segment users by experience and compare:
+
+```python
+# Define experience groups from user_information:
+expert = (archaeology_exp >= 10) & (pottery_exp >= 10)
+intermediate = (archaeology_exp >= 5) | (pottery_exp >= 5)
+novice = (archaeology_exp == 0) & (pottery_exp == 0)
+
+# Compare groups on:
+# - Correlation with model
+# - Evaluation time
+# - Discard rate
+# - Inter-group agreement
+# - Consistency (variance in repeated patterns)
+```
+
+**Statistical tests:**
+- **ANOVA**: Compare mean correlation scores across groups
+- **Mann-Whitney U**: Non-parametric comparison (2 groups)
+- **Kruskal-Wallis**: Non-parametric comparison (3+ groups)
+
+#### 5. **Time Analysis**
+
+Explore relationship between evaluation time and quality:
+
+```python
+# Correlate evaluation_time with:
+# - Agreement with consensus ranking
+# - Number of discards
+# - Consistency with user's own previous evaluations
+
+# Identify outliers:
+# - Too fast (<10s): Possibly rushed/random
+# - Too slow (>300s): Possibly uncertain/difficult cases
+```
+
+**Visualizations:**
+- Scatter: Time vs. correlation with model
+- Box plot: Time distribution by experience level
+- Time series: User's average time trend over evaluations
+
+#### 6. **Item Difficulty Index**
+
+Identify "hard" items where users disagree or struggle:
+
+```python
+# For each item:
+difficulty_score = {
+    'variance': variance_of_rankings_across_users,
+    'mean_time': average_evaluation_time,
+    'discard_rate': percentage_of_matches_discarded,
+    'consensus': 1 - (inter_rater_reliability)
+}
+
+# Flag items with high difficulty for manual review
+```
+
+#### 7. **Clustering and Pattern Discovery**
+
+Group similar evaluation behaviors:
+
+```python
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+
+# Feature vector per user:
+features = [
+    mean_correlation_with_model,
+    mean_discard_rate,
+    mean_evaluation_time,
+    experience_level,
+    consistency_score
+]
+
+# Apply k-means or hierarchical clustering
+# Visualize with PCA or t-SNE
+```
+
+### Recommended Workflow
+
+1. **Data Export** from Directus:
+   ```sql
+   SELECT 
+     uf.*,
+     ui.educational_qualification,
+     ui.experience_archaeology,
+     ui.experience_pottery
+   FROM user_feedbacks uf
+   LEFT JOIN user_information ui ON uf.user_created = ui.user_created
+   ```
+
+2. **Preprocessing**:
+   - Handle missing/null scores (discarded items)
+   - Normalize rankings (1-10 or 0-1 scale)
+   - Parse educational_qualification JSON arrays
+
+3. **Analysis Pipeline**:
+   - Calculate metrics per item, per user, and aggregate
+   - Generate visualizations (matplotlib, seaborn, plotly)
+   - Statistical testing for significance
+
+4. **Reporting**:
+   - Summary statistics table
+   - Correlation heatmaps
+   - Experience group comparisons
+   - Difficult items list with examples
+
+### Tools and Libraries
+
+**Python ecosystem:**
+```bash
+pip install pandas numpy scipy scikit-learn
+pip install matplotlib seaborn plotly
+pip install krippendorff statsmodels
+```
+
+**R ecosystem:**
+```r
+install.packages(c("irr", "psych", "ggplot2", "dplyr"))
+```
+
+**Directus API for data export:**
+```javascript
+// Fetch all feedbacks with user context
+const response = await api.get('/items/user_feedbacks', {
+  params: {
+    'fields': '*,user_created.experience_archaeology,user_created.experience_pottery',
+    'limit': -1
+  }
+});
+```
+
+### Expected Outcomes
+
+- **Model improvement**: Identify systematic biases in statistical similarity
+- **Methodology validation**: Confirm that human judgment provides meaningful signal
+- **Experience effect**: Quantify how expertise influences evaluation
+- **Dataset quality**: Flag problematic items for review/exclusion
+- **Theoretical insight**: Understand the concept of "archaeological similarity"
+
+### Publication and Sharing
+
+Anonymized aggregate data can be shared as:
+- CSV/JSON exports of metrics
+- Jupyter notebooks with analysis code
+- Interactive dashboards (Streamlit, Dash)
+- Academic papers with statistical findings
 
 ## Contributing
 

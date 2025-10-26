@@ -4,6 +4,7 @@ import { useTheme } from '../context/ThemeContext'
 import { clearTokens } from '../services/auth'
 import { useNavigate } from 'react-router-dom'
 import api from '../services/api'
+import { COLLECTIONS } from '../config/collections'
 
 export default function Navbar() {
   const { isDark, toggleTheme } = useTheme()
@@ -84,7 +85,7 @@ export default function Navbar() {
         // Evaluate user_information profile status
         if (user?.id) {
           try {
-            const infoRes = await api.get('/items/user_information', {
+            const infoRes = await api.get(`/items/${COLLECTIONS.USER_INFORMATION}`, {
               params: {
                 'filter[user_created][_eq]': user.id,
                 fields: 'educational_qualification,experience_in_archaeology,experience_with_documentation_and_study_of_pottery,more_about_me',

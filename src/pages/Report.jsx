@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import api from '../services/api'
 import Footer from '../components/Footer'
+import { COLLECTIONS } from '../config/collections'
 
 // Simple Pie Chart Component
 function PieChart({ evaluated, remaining, total }) {
@@ -168,7 +169,7 @@ export default function Report() {
         }
 
         // Get total count of model_output items
-        const totalRes = await api.get('/items/model_output', {
+        const totalRes = await api.get(`/items/${COLLECTIONS.MODEL_OUTPUT}`, {
           params: {
             'fields': 'id',
             'limit': -1 // Get all items to count
@@ -178,7 +179,7 @@ export default function Report() {
         const total = totalItems.length
 
         // Get count of items the user has evaluated
-        const evaluatedRes = await api.get('/items/user_feedbacks', {
+        const evaluatedRes = await api.get(`/items/${COLLECTIONS.USER_FEEDBACKS}`, {
           params: {
             'filter[user_created][_eq]': userId,
             'fields': 'id,item',

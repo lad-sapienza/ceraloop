@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import DynamicForm from '../components/DynamicForm'
 import api from '../services/api'
+import { COLLECTIONS } from '../config/collections'
 
 export default function AboutMe() {
   const [loading, setLoading] = useState(true)
@@ -20,7 +21,7 @@ export default function AboutMe() {
         if (!userId) throw new Error('Unable to determine current user')
 
         // Fetch existing user_information limited to current user
-        const res = await api.get('/items/user_information', {
+        const res = await api.get(`/items/${COLLECTIONS.USER_INFORMATION}`, {
           params: {
             'filter[user_created][_eq]': userId,
             limit: 1,
@@ -118,7 +119,7 @@ export default function AboutMe() {
             ) : (
               <DynamicForm
                 api={api}
-                collection="user_information"
+                collection={COLLECTIONS.USER_INFORMATION}
                 recordId={recordId}
                 initialData={initialData}
                 onSuccess={handleSuccess}

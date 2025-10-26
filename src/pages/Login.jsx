@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import helpContent from './help.md?raw'
 import LoginForm from './LoginForm'
 import Register from './Register'
+import packageJson from '../../package.json'
 
 export default function Login() {
   const [mode, setMode] = useState('login') // 'login' | 'register'
@@ -59,6 +60,9 @@ export default function Login() {
               <img src="/LAD-logo.png" alt="LAD Logo" className="h-10" />
               LAD: Laboratorio di Archeologia Digitale alla Sapienza
             </a>
+            <span className="block mt-2 text-xs text-gray-500 dark:text-gray-500">
+              CeraLoop v{packageJson.version}
+            </span>
           </p>
         </div>
       </div>

@@ -5,6 +5,7 @@ import AuthImage from '../components/AuthImage'
 import ImagePanel from '../components/ImagePanel'
 import Footer from '../components/Footer'
 import { toast } from '../components/Toaster'
+import { COLLECTIONS } from '../config/collections'
 
 export default function Dashboard() {
   const [profile, setProfile] = useState(null)
@@ -56,7 +57,7 @@ export default function Dashboard() {
         }
 
         // Get all items that the current user has already provided feedback for
-        const feedbackRes = await api.get('/items/user_feedbacks', {
+        const feedbackRes = await api.get(`/items/${COLLECTIONS.USER_FEEDBACKS}`, {
           params: {
             'filter[user_created][_eq]': userId,
             'fields': 'item',
@@ -74,7 +75,7 @@ export default function Dashboard() {
         let modelOutputRes
         if (feedbackItems.length > 0) {
           // Exclude items that already have feedback from this user
-          modelOutputRes = await api.get('/items/model_output', {
+          modelOutputRes = await api.get(`/items/${COLLECTIONS.MODEL_OUTPUT}`, {
             params: {
               'filter[item][_nin]': feedbackItems.join(','), // NOT IN array
               'limit': 1,
@@ -83,7 +84,7 @@ export default function Dashboard() {
           })
         } else {
           // User has no feedback yet, get the first item
-          modelOutputRes = await api.get('/items/model_output', {
+          modelOutputRes = await api.get(`/items/${COLLECTIONS.MODEL_OUTPUT}`, {
             params: {
               'limit': 1,
               'sort': 'id'
@@ -326,7 +327,7 @@ export default function Dashboard() {
       }
 
       // Get all items that the current user has already provided feedback for
-      const feedbackRes = await api.get('/items/user_feedbacks', {
+      const feedbackRes = await api.get(`/items/${COLLECTIONS.USER_FEEDBACKS}`, {
         params: {
           'filter[user_created][_eq]': userId,
           'fields': 'item',
@@ -345,7 +346,7 @@ export default function Dashboard() {
       // Get the first model_output item that is NOT in the feedback list
       let modelOutputRes
       if (excludeList.length > 0) {
-        modelOutputRes = await api.get('/items/model_output', {
+        modelOutputRes = await api.get(`/items/${COLLECTIONS.MODEL_OUTPUT}`, {
           params: {
             'filter[item][_nin]': excludeList.join(','),
             'limit': 1,
@@ -353,7 +354,7 @@ export default function Dashboard() {
           }
         })
       } else {
-        modelOutputRes = await api.get('/items/model_output', {
+        modelOutputRes = await api.get(`/items/${COLLECTIONS.MODEL_OUTPUT}`, {
           params: {
             'limit': 1,
             'sort': 'id'
@@ -367,7 +368,7 @@ export default function Dashboard() {
       let attempts = retries
       while (attempts > 0 && (!record || (excludeItem && record?.item === excludeItem))) {
         await new Promise(res => setTimeout(res, delayMs))
-        const retryRes = await api.get('/items/model_output', {
+        const retryRes = await api.get(`/items/${COLLECTIONS.MODEL_OUTPUT}`, {
           params: excludeList.length > 0
             ? { 'filter[item][_nin]': excludeList.join(','), 'limit': 1, 'sort': 'id' }
             : { 'limit': 1, 'sort': 'id' }
@@ -432,7 +433,7 @@ export default function Dashboard() {
       }
 
       // Make the API call
-      const response = await api.post('/items/user_feedbacks', payload)
+      const response = await api.post(`/items/${COLLECTIONS.USER_FEEDBACKS}`, payload)
 
   console.log('Feedback saved successfully:', response.data)
 
@@ -478,7 +479,7 @@ export default function Dashboard() {
       const userId = (userRes.data?.data || userRes.data)?.id
       if (!userId) return
 
-      const res = await api.get('/items/user_feedbacks', {
+      const res = await api.get(`/items/${COLLECTIONS.USER_FEEDBACKS}`, {
         params: {
           'filter[user_created][_eq]': userId,
           'fields': 'id,date_created',
@@ -512,7 +513,7 @@ export default function Dashboard() {
     if (!recordToDelete) return
     try {
       setIsDeleting(true)
-      await api.delete(`/items/user_feedbacks/${recordToDelete.id}`)
+      await api.delete(`/items/${COLLECTIONS.USER_FEEDBACKS}/${recordToDelete.id}`)
       setRecentRecords(prev => prev.filter(r => r.id !== recordToDelete.id))
       setDeleteModalOpen(false)
       setRecordToDelete(null)

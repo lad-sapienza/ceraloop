@@ -1,4 +1,5 @@
 import React from 'react'
+import packageJson from '../../package.json'
 
 export default function Footer({ fixed = false }) {
   const currentYear = new Date().getFullYear()
@@ -14,12 +15,14 @@ export default function Footer({ fixed = false }) {
       <div className="mx-auto px-6 py-3 text-center text-sm text-gray-600 dark:text-gray-400">
         <span className="inline-flex items-center gap-2">
           <img src="/CeraLoop.png" alt="CeraLoop" className="h-5 w-auto" />
-          <span>
+          CeraLoop 
+          <span className="text-xs text-gray-500 dark:text-gray-500">v{packageJson.version}</span>
+          {' · '}
+            <span>
             © {yearText} <a className="underline hover:no-underline" href="https://lad.saras.uniroma1.it/" target="_blank" rel="noopener noreferrer">LAD: Laboratorio di Archeologia Digitale alla Sapienza</a> ·{' '}
             <a className="underline hover:no-underline" href="mailto:julian.bogdani@uniroma1.it">Julian Bogdani</a>
             {' · '}
             <a className="underline hover:no-underline" href="mailto:lorenzo.cardarelli@uniroma1.it">Lorenzo Cardarelli</a>
-            
           </span>
         </span>
       </div>
