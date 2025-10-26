@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [1.0.1] - 2025-10-26
+
+### Added
+- GitHub Actions workflow to build on tag/release and attach the production build as a release asset (`.github/workflows/release.yml`).
+- DOI and citation metadata updates in `CITATION.cff`.
+
+### Changed
+- README: Added Releases badge showing the latest tagged version.
+
+### Docs
+- Added initial `CHANGELOG.md` (v1.0.0 entry).
+
 ## [1.0.0] - 2025-10-26
 
 ### Added
@@ -30,3 +42,4 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - README updated with Advanced Configuration: Collection Names and analysis methodology.
 
 [1.0.0]: https://github.com/lad-sapienza/ceraloop/releases/tag/v1.0.0
+[1.0.1]: https://github.com/lad-sapienza/ceraloop/releases/tag/v1.0.1

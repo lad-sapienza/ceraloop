@@ -1,11 +1,15 @@
 # CeraLoop
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Release](https://img.shields.io/github/v/release/lad-sapienza/ceraloop?display_name=tag&sort=semver)](https://github.com/lad-sapienza/ceraloop/releases)
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://ceraloop.lad-sapienza.it/)
 [![React](https://img.shields.io/badge/React-18-blue?logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-4-646CFF?logo=vite)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 [![Directus](https://img.shields.io/badge/Directus-Backend-6644FF?logo=directus)](https://directus.io/)
+[![DOI](https://zenodo.org/badge/1081266607.svg)](https://doi.org/10.5281/zenodo.17449886)
+
+
 
 A web application for evaluating and ranking AI-generated pottery image matches. Built with React, Vite, and Directus as a headless CMS backend.
 
