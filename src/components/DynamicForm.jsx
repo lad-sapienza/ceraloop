@@ -77,15 +77,24 @@ export default function DynamicForm({
     setSaving(true)
     setError(null)
 
+    // Filter out system fields and excluded fields from submission
+    const systemFields = ['id', 'user_created', 'user_updated', 'date_created', 'date_updated', 'sort', 'status']
+    const submissionData = Object.keys(formData)
+      .filter(key => !systemFields.includes(key) && !excludeFields.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = formData[key]
+        return obj
+      }, {})
+
     try {
       let response
       if (recordId) {
         // Update existing record
-        response = await api.patch(`/items/${collection}/${recordId}`, formData)
+        response = await api.patch(`/items/${collection}/${recordId}`, submissionData)
         toast.success('Updated successfully')
       } else {
         // Create new record
-        response = await api.post(`/items/${collection}`, formData)
+        response = await api.post(`/items/${collection}`, submissionData)
         toast.success('Created successfully')
       }
       
@@ -98,8 +107,16 @@ export default function DynamicForm({
         || err.response?.data?.message 
         || err.message 
         || 'Failed to save'
-      setError(errorMsg)
-      toast.error(errorMsg)
+      
+      // Add helpful context for permission errors
+      let displayMsg = errorMsg
+      if (err.response?.status === 403) {
+        const operation = recordId ? 'update' : 'create'
+        displayMsg = `Permission denied: You don't have permission to ${operation} records in this collection. ${errorMsg}`
+      }
+      
+      setError(displayMsg)
+      toast.error(displayMsg)
       if (onError) {
         onError(err)
       }

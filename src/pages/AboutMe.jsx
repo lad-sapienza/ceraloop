@@ -22,13 +22,27 @@ export default function AboutMe() {
         if (!userId) throw new Error('Unable to determine current user')
 
         // Fetch existing user_information limited to current user
-        const res = await api.get(`/items/${COLLECTIONS.USER_INFORMATION}`, {
-          params: {
-            'filter[user_created][_eq]': userId,
-            limit: 1,
-          },
-        })
-        const data = (res.data?.data || res.data || [])[0]
+        // Try filtering by user_created if available, otherwise fetch all and find match
+        let res
+        try {
+          res = await api.get(`/items/${COLLECTIONS.USER_INFORMATION}`, {
+            params: {
+              'filter[user_created][_eq]': userId,
+              limit: 1,
+            },
+          })
+        } catch (filterErr) {
+          // If filter fails (403, user_created not enabled), try fetching without filter
+          res = await api.get(`/items/${COLLECTIONS.USER_INFORMATION}`, {
+            params: { limit: -1 },
+          })
+        }
+        
+        const allData = res.data?.data || res.data || []
+        // Find record that matches current user
+        const data = Array.isArray(allData) 
+          ? allData.find(item => item.user_created === userId) || allData[0]
+          : allData
 
         if (data) {
           setRecordId(data.id)
@@ -57,10 +71,8 @@ export default function AboutMe() {
         }
       } catch (e) {
         // If forbidden or not found, show empty form with defaults
-        console.error('AboutMe load error:', e.response || e)
         const serverMsg = e.response?.data?.errors?.[0]?.message || e.response?.data?.message || e.message
-        // Inform the user (useful when permission issue occurs)
-        toast.error(`About me: ${serverMsg}`)
+        toast.error(`Failed to load profile: ${serverMsg}`)
         setRecordId(null)
         setInitialData({
           educational_qualification: ['None'],
