@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import DynamicForm from '../components/DynamicForm'
+import { toast } from '../components/Toaster'
 import api from '../services/api'
 import { COLLECTIONS } from '../config/collections'
 
@@ -56,6 +57,10 @@ export default function AboutMe() {
         }
       } catch (e) {
         // If forbidden or not found, show empty form with defaults
+        console.error('AboutMe load error:', e.response || e)
+        const serverMsg = e.response?.data?.errors?.[0]?.message || e.response?.data?.message || e.message
+        // Inform the user (useful when permission issue occurs)
+        toast.error(`About me: ${serverMsg}`)
         setRecordId(null)
         setInitialData({
           educational_qualification: ['None'],
