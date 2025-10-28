@@ -527,32 +527,31 @@ export default function Dashboard() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen pt-24 px-8 pb-8">
+      <div className="min-h-screen pt-12 md:pt-24 md:px-8 sm:pb-8">
         <main>
         
           {loading && <div className="card max-w-2xl mb-6"><div className="dark:text-gray-300">Loading profile...</div></div>}
           {error && <div className="card max-w-2xl mb-6"><div className="text-red-600 dark:text-red-400">{error}</div></div>}
           
 
-        <div className="card w-full">
-          <h3 className="text-xl font-semibold mb-4 dark:text-gray-100">Model Output</h3>
+        <div className="card w-full !px-0">
           {modelLoading && <div className="dark:text-gray-300">Loading model output...</div>}
           {modelError && <div className="text-red-600 dark:text-red-400">{modelError}</div>}
           {!modelLoading && !modelError && !modelOutput && (
             <div className="text-gray-500 dark:text-gray-400">No model output records found</div>
           )}
           {modelOutput && (
-            <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-[400px_1fr] gap-2">
               {/* Left side - Input Image */}
-              <div>
-                {modelOutput.image ? (
-                  <div className="space-y-4">
+              <div className="flex flex-col items-center">
+                  {modelOutput.image ? (
+                    <div className="space-y-4 sticky top-20 z-30 w-40 md:w-64">
                     <div>
                       <h4 className="text-sm font-semibold mb-2 dark:text-gray-200">Reference Image [id#{modelOutput.id}]</h4>
                       <img 
                         src={`${import.meta.env.VITE_DIRECTUS_URL}/assets/${modelOutput.image}`}
                         alt="Model output"
-                        className="w-64 h-auto rounded-lg shadow-lg"
+                        className="w-40 md:w-64 h-auto rounded-lg shadow-lg"
                       />
                     </div>
                     {/* Save Selection Button */}
@@ -603,11 +602,11 @@ export default function Dashboard() {
 
                     {/* Recent Records List */}
                     <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="sm:flex items-center justify-between mb-2 text-center sm:text-start">
                         <h5 className="text-sm font-semibold dark:text-gray-200">Your recent submissions</h5>
                         <button
                           onClick={fetchRecentRecords}
-                          className="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
+                          className="text-xs px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 w-full md:w-auto "
                         >
                           Refresh
                         </button>
@@ -617,66 +616,26 @@ export default function Dashboard() {
                       ) : (
                         <div className="space-y-2">
                           {recentRecords.map((rec) => (
-                            <div key={rec.id} className="flex items-center justify-between text-sm bg-white dark:bg-slate-800 rounded-md px-3 py-2 border border-gray-200 dark:border-gray-700">
-                              <div className="flex items-center gap-3">
+                            <div key={rec.id} className="sm:flex items-center justify-between text-sm bg-white dark:bg-slate-800 rounded-md px-3 py-2 border border-gray-200 dark:border-gray-700">
+                              <span className="text-gray-500 dark:text-gray-400">{new Date(rec.date_created).toLocaleString()}</span>
+                              <div className="flex items-center gap-3 justify-between md:justify-start">
                                 <span className="font-mono text-gray-800 dark:text-gray-200">#{rec.id}</span>
-                                <span className="text-gray-500 dark:text-gray-400">{new Date(rec.date_created).toLocaleString()}</span>
+                                <button
+                                  onClick={() => promptDeleteRecord(rec)}
+                                  className="p-2 rounded bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50"
+                                  title="Delete record"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10" />
+                                  </svg>
+                                </button>
                               </div>
-                              <button
-                                onClick={() => promptDeleteRecord(rec)}
-                                className="p-2 rounded bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50"
-                                title="Delete record"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m-9 0h10" />
-                                </svg>
-                              </button>
+                              
                             </div>
                           ))}
                         </div>
                       )}
-                    </div>
-
-
-                    
-                    {/* Display Saved Selection */}
-{/*                     
-                    {savedSelection && (
-                      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                        <h5 className="text-sm font-semibold mb-3 dark:text-gray-200">Current Selection:</h5>
-                        <div className="space-y-2 text-sm">
-                          {savedSelection.map(item => (
-                            <div 
-                              key={item.order} 
-                              className={`flex items-start justify-between p-2 rounded ${
-                                item.weight === 0 
-                                  ? 'bg-gray-200 dark:bg-gray-800 opacity-60' 
-                                  : 'bg-white dark:bg-slate-800'
-                              }`}
-                            >
-                              <div className="flex items-start flex-1">
-                                <span className="font-medium text-indigo-600 dark:text-indigo-400 mr-2">{item.order}.</span>
-                                <span className={`${
-                                  item.weight === 0 
-                                    ? 'text-gray-500 dark:text-gray-500 line-through' 
-                                    : 'text-gray-700 dark:text-gray-300'
-                                }`}>
-                                  {item.basename}
-                                </span>
-                              </div>
-                              <span className={`ml-3 px-2 py-1 rounded text-xs font-mono ${
-                                item.weight === 0
-                                  ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-                                  : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                              }`}>
-                                {item.weight.toFixed(1)}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    */}
+                    </div>                    
                   </div>
                 ) : (
                   <div className="text-gray-500 dark:text-gray-400 p-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
@@ -687,14 +646,14 @@ export default function Dashboard() {
               </div>
 
               {/* Right side - Match Images - Draggable */}
-              <div>
+              <div className='w-40 md:w-auto'>
                 {matchImages.length > 0 && (
                   <div>
                     <h4 className="text-sm font-semibold mb-3 dark:text-gray-200">
                       Matched Pottery Images
                       <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">(drag to reorder)</span>
                     </h4>
-                    <div className="grid grid-cols-[repeat(auto-fill,256px)] gap-4">
+                    <div className="grid md:grid-cols-[repeat(auto-fill,256px)] gap-2">
                       {matchImages.map((match, index) => (
                         <div 
                           key={`${match.key}-${index}`}

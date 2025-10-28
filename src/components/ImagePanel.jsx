@@ -30,7 +30,7 @@ export default function ImagePanel({
         <AuthImage 
           filename={match.filename}
           alt={`${match.key}`}
-          className="w-64 h-auto rounded-lg"
+          className="w-40 md:w-64 h-auto rounded-lg"
         />
       </div>
       <div className="flex gap-2 pt-2">
@@ -38,7 +38,7 @@ export default function ImagePanel({
         {!isFirst && (
           <button
             onClick={() => onMoveUp(index)}
-            className="px-3 py-2 rounded text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors"
+            className="px-3 py-2 rounded text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors rotate-[90deg] lg:rotate-0"
             title="Move left"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,7 +51,7 @@ export default function ImagePanel({
         {!isLast && (
           <button
             onClick={() => onMoveDown(index)}
-            className="px-3 py-2 rounded text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors"
+            className="px-3 py-2 rounded text-xs font-medium bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-colors rotate-[90deg] lg:rotate-0"
             title="Move right"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
