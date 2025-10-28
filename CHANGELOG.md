@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [1.0.4] - 2025-10-28
+
+### Added
+- (No user-facing features added in this patch; changes are layout/UX and stability improvements.)
+
+### Changed
+- `src/pages/Dashboard.jsx`: Implemented a responsive two-column layout for small screens where the reference panel stays visible (sticky) while the matches column scrolls independently. Adjusted grid behavior to avoid horizontal overflow on narrow viewports.
+- `src/components/ImagePanel.jsx`: Constrained match thumbnails to a consistent display area (approx. 256×256), improved responsive sizing so images keep their aspect ratio, and updated component layout to avoid horizontal overflow.
+- `src/components/ImagePanel.jsx`: Rotated move-arrow SVGs vertically on small (mobile) screens (base rotation -90°, reset at `sm` and above) to improve ergonomics in narrow layouts.
+
+### Fixed
+- `src/pages/Dashboard.jsx`: Reconstructed and cleaned up the file to remove duplicate JSX fragments and duplicate/default export issues introduced during earlier refactor work; this resolves related build/compile errors.
+
+### Notes
+- These edits are primarily front-end layout and UX fixes. Please run the dev server and test the Dashboard at target mobile viewport(s) to confirm sticky offsets and spacing meet expectations. If the header overlaps the sticky panel, adjust the `top-` offset values (e.g., `top-12`, `top-20`, `sm:top-24`).
+
+
 ## [1.0.3] - 2025-10-27
 
 ### Fixed
@@ -63,3 +80,5 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 [1.0.1]: https://github.com/lad-sapienza/ceraloop/releases/tag/v1.0.1
 [1.0.2]: https://github.com/lad-sapienza/ceraloop/releases/tag/v1.0.2
 [1.0.3]: https://github.com/lad-sapienza/ceraloop/releases/tag/v1.0.3
+[1.0.4]: https://github.com/lad-sapienza/ceraloop/releases/tag/v1.0.4
+
