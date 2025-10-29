@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [1.0.5] - 2025-10-29
+
+### Changed
+- Bumped project version in `package.json` to `1.0.5`.
+- `src/components/Navbar.jsx`: improved user menu behavior and avatar/profile status handling:
+  - Closes the user menu on outside click, Escape key, and on route change for better accessibility and mobile UX.
+  - Loads and displays avatar blobs from Directus if available and revokes object URLs on cleanup to avoid leaks.
+  - Adds a profile-status ring (green/yellow/red) to indicate whether user profile information is complete, incomplete, or missing.
+  - Small responsive tweaks to icons and visibility of navigation links (text shown on md+ screens, compact icons on small screens).
+
+### Fixed
+- Minor robustness fixes around menu open/close listeners and cleanup to prevent stale listeners or memory leaks.
+
 ## [1.0.4] - 2025-10-28
 
 ### Added
@@ -81,4 +94,5 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 [1.0.2]: https://github.com/lad-sapienza/ceraloop/releases/tag/v1.0.2
 [1.0.3]: https://github.com/lad-sapienza/ceraloop/releases/tag/v1.0.3
 [1.0.4]: https://github.com/lad-sapienza/ceraloop/releases/tag/v1.0.4
+[1.0.5]: https://github.com/lad-sapienza/ceraloop/releases/tag/v1.0.5
 
