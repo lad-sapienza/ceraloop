@@ -215,7 +215,7 @@ export default function Navbar() {
                 aria-expanded={menuOpen}
               >
                 {(() => {
-                  const ringColor = profileStatus === 'complete' ? 'ring-green-500' : profileStatus === 'incomplete' ? 'ring-yellow-500' : 'ring-red-500'
+                  const ringColor = profileStatus === 'complete' ? 'ring-green-500' : profileStatus === 'incomplete' ? 'ring-yellow-500' : 'ring-red-500 animate-pulse'
                   return (
                     <div
                       className={`w-9 h-9 rounded-full ring-2 ${ringColor} overflow-hidden bg-indigo-100 dark:bg-slate-600 flex items-center justify-center`}
