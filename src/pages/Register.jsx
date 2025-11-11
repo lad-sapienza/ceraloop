@@ -76,7 +76,7 @@ export default function Register({ onToggleMode, onOpenHelp }) {
       setRegisterDelay(0)
       setLockedUntil(null)
 
-      setSuccess('Account created. An admin will activate it by assigning a dataset to evaluate. You will be notified via your email address.')
+      setSuccess('Account created successfully! A dataset has been automatically assigned. You can now sign in and start working.')
       // Reset some fields but keep emails visible
       setPassword('')
       setAvatar(null)

@@ -30,7 +30,7 @@ A web application for evaluating and ranking AI-generated pottery image matches.
 - 🙋 **About me profile**: Provide background info used to weight feedback (education, archaeology experience, pottery documentation experience, notes)
 - 🧾 **Help content (Markdown)**: Dedicated Help page and a login modal rendering the same `help.md` content, with dark-mode friendly typography
 - 🧭 **Footer**: Simple footer across all pages with MIT license and credits
-- 🧑‍💻 **Self-registration**: Users can create an account (email entered twice), optional avatar upload; admin activates accounts
+- 🧑‍💻 **Self-registration**: Users can create an account (email entered twice), optional avatar upload; dataset is automatically assigned and users can start working immediately
 - ⏱️ **Evaluation time tracking**: Automatically tracks time from first interaction to save (in seconds)
 
 ### Dashboard
@@ -50,12 +50,14 @@ Progress visualization showing:
 
 ### About me
 Give us short background info to help interpret and weight your feedback:
-- Educational qualification (checkboxes)
-- Experience in archaeology (none/0, up to 5 years/5, up to 10 years/10, more than 10 years/10+)
-- Experience with documentation and study of pottery (same values as above)
+- Educational qualification (checkboxes: None, High School, Bachelor's Degree, Master's Degree, PhD, Other)
+- Experience in archaeology (years of experience)
+- Experience with documentation and study of pottery (years of experience)
 - More about me (free text)
 
 Defaults: if empty, we use safe defaults (e.g., education = ["None"], experience = "0"). You can edit these anytime.
+
+**Technical note**: The About Me form dynamically loads field definitions from Directus. This requires users to have read access to the `directus_fields` system collection (filtered to `user_information` only). See [docs/DIRECTUS_SETUP.md](docs/DIRECTUS_SETUP.md) for configuration details.
 
 ## Tech Stack
 
@@ -139,9 +141,20 @@ Users need the following permissions:
 3. **model_output**:
    - Read: All fields
 
-4. **user_feedbacks**:
+3. **user_feedbacks**:
    - Create: All fields
    - Read: Filter by `user_created` = `$CURRENT_USER`
+
+4. **user_information**:
+   - Create: All fields (users create their own profile)
+   - Read: Filter by `user_created` = `$CURRENT_USER` (users can only read their own profile)
+   - Update: Filter by `user_created` = `$CURRENT_USER` (users can only update their own profile)
+
+5. **System Collections** (for dynamic form field metadata):
+   - `directus_fields`: Read access filtered by `collection` = `user_information`
+   - `directus_relations`: (Optional) Read access for relationship metadata
+   
+   **Important**: See [docs/DIRECTUS_SETUP.md](docs/DIRECTUS_SETUP.md) for detailed step-by-step instructions on configuring all permissions.
 
 ## Security Configuration
 
@@ -250,8 +263,9 @@ src/
 
 1. **Add Items**: Upload pottery images to `model_output` collection in Directus
 2. **Manage Users**: Create user accounts with appropriate roles
-   - Optional: enable self-registration by allowing Public/Guest to POST `/users` and (optionally) `/files` for avatar uploads
-   - Ensure `user_information` permissions allow users to create/read/update their own record (filter by `user_created`)
+   - **Self-registration**: Enable by allowing Public/Guest role to POST `/users` and (optionally) `/files` for avatar uploads
+   - New users can start working immediately after registration (datasets are auto-assigned via Directus policies)
+   - **Configure permissions**: Ensure users have appropriate access to collections AND field metadata for dynamic forms. See [docs/DIRECTUS_SETUP.md](docs/DIRECTUS_SETUP.md)
 3. **View Results**: Query `user_feedbacks` collection for evaluation data
 4. **Export Data**: Use Directus API or export features for analysis
 
@@ -277,7 +291,7 @@ npm run preview
 - **Touch Controls**: Up/Down (Left/Right) buttons to reorder without drag & drop
 - **Recent Records**: Fetch last 5 `user_feedbacks` by user, with delete confirmation modal
 - **User Menu**: Avatar fetched from Directus Files/Assets. Ring color from `user_information` completeness.
-- **About Me (CRU)**: Reads the current user's `user_information`. Creates if missing; updates otherwise. Fields include education (checkboxes), experiences (selects), notes.
+- **About Me (CRU)**: Reads the current user's `user_information`. Creates if missing; updates otherwise. Dynamically loads field definitions from Directus to adapt to schema changes. Fields include education (checkboxes), experiences (integer inputs), notes.
 - **Help Modal**: Login page renders `help.md` in a scrollable modal via `react-markdown`.
 - **Footer**: Consistent credits and MIT license across pages.
 - **Evaluation Time Tracking**: Measures time from first user interaction (drag, discard, or move) to save. Timer resets for each new item. Stored as `evaluation_time` in seconds. This helps analyze:
